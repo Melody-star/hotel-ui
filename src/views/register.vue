@@ -52,7 +52,7 @@ const register = async () => {
             return
         }
 
-        const res = await axios.post('/user', {
+        const {data} = await axios.post('/user', {
             username: username.value,
             password: password.value,
             email: email.value,
@@ -60,7 +60,10 @@ const register = async () => {
             userType: "1",
             phoneNumber: ""
         })
-        if (res.data.message == '注册成功') {
+
+        console.log(data);
+
+        if (data.status == 200) {
             ElMessage({
                 message: '注册成功',
                 type: 'success'

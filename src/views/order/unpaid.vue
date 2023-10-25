@@ -1,20 +1,19 @@
 <template>
   <div style="padding: 30px 0 0 30px">
-    <h2 style="margin-bottom: 20px">查找菜品</h2>
-    <span>菜品名称：</span>
-    <input type="text" v-model="form.itemName" />
-    <button @click="find">查找菜品</button>
-    <h2 style="margin-bottom: 20px">菜品列表</h2>
+    <h2 style="margin-bottom: 20px">待支付订单</h2>
     <el-table :data="tableData" style="width: 98%">
-      <el-table-column label="菜品名称" prop="itemName" />
-      <el-table-column label="菜品描述" prop="description" />
-      <el-table-column label="菜品价格" prop="price" />
-      <el-table-column label="菜品图片">
+      <el-table-column label="订单ID" prop="id" />
+      <el-table-column label="客房编号" prop="room.roomNumber" />
+      <el-table-column label="客房类型" prop="room.roomType" />
+      <el-table-column label="用户姓名" prop="user.name" />
+      <el-table-column label="用户电话" prop="user.phoneNumber" />
+      <el-table-column label="入住时间" prop="checkInDate" />
+      <el-table-column label="离开时间" prop="checkOutDate" />
+      <el-table-column align="right">
         <template #default="scope">
-          <el-image
-            style="width: 100px; height: 100px"
-            :src="scope.row.itemImage"
-          />
+          <el-button type="success" @click="handlePay(scope.row)"
+            >已支付</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
@@ -74,18 +73,59 @@ export default {
       baseUrl: "",
     };
   },
+  mounted() {
+    this.fetchData();
+    this.baseUrl = axios.defaults.baseURL;
+  },
   methods: {
-    find() {
+    fetchData() {
+      // 使用 Axios 执行 GET 请求
       this.axios
-        .get("/menu-item/" + this.form.itemName)
+        .get("/order/" + "待支付")
         .then((res) => {
-            if (res.status == 200) {
-              this.tableData = res.data.data;
-            }
+          console.log(res);
+          if (res.data.status == 200) {
+            this.tableData = res.data.data;
+            console.log(this.tableData);
+          }
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
         });
+    },
+    async handleDelete(row) {
+      const { data } = await axios.delete("/menu-item/" + row.id);
+      if (data.status == 200) {
+        ElMessage({
+          message: "删除成功",
+          type: "success",
+        });
+      } else {
+        ElMessage({
+          message: "删除失败",
+          type: "error",
+        });
+      }
+      this.fetchData();
+    },
+    async handlePay(e) {
+      console.log(e);
+      const { data } = await axios.patch("/order/" + e.id, {
+        orderStatus: "待使用",
+      });
+
+      if (data.status == 200) {
+        ElMessage({
+          message: "操作成功",
+          type: "success",
+        });
+        this.fetchData()
+      } else {
+        ElMessage({
+          message: "操作失败",
+          type: "error",
+        });
+      }
     },
   },
 };

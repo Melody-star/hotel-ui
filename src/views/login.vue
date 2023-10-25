@@ -40,24 +40,25 @@ const register = () => {
 
 const login = async () => {
     if (username.value && password.value) {
-        const res = await axios.get('/user/login', {
+        const {data} = await axios.get('/user/login', {
             params: {
                 username: username.value,
                 password: password.value
             }
         })
-        if (res.data.message == '登录成功') {
+        console.log(data);
+        if (data.message == '成功') {
             ElMessage({
                 message: '登录成功',
                 type: 'success'
             })
-            userStore.userInfo = res.data.data
+            userStore.userInfo = data.data.data
             router.push({
                 path: '/home'
             })
         } else {
             ElMessage({
-                message: res.data.message,
+                message: data.data.message,
                 type: 'error'
             })
         }

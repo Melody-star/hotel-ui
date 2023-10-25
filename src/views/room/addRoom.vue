@@ -93,7 +93,7 @@ let statusOptions = [
 ];
 
 const onSubmit = async () => {
-  const res = await axios.post("/room", {
+  const { data } = await axios.post("/room", {
     capacity: parseInt(form.capacity),
     price: parseInt(form.price),
     roomImage: "",
@@ -101,7 +101,7 @@ const onSubmit = async () => {
     roomStatus: form.status,
     roomType: form.type,
   });
-  if (res.data.message == "添加成功") {
+  if (data.data.message == "添加成功") {
     ElMessage({
       message: "添加成功",
       type: "success",

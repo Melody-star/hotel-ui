@@ -5,8 +5,8 @@
     <h2>客房列表</h2>
     <el-table :data="tableData" style="width: 98%">
       <el-table-column label="客房编号" prop="roomNumber" />
-      <el-table-column label="客房类型" prop="roomStatus" />
-      <el-table-column label="客房价格" prop="roomType" />
+      <el-table-column label="客房类型" prop="roomType" />
+      <el-table-column label="客房价格" prop="price" />
       <el-table-column label="入住人数" prop="capacity" />
       <!-- <el-table-column label="客房图片">
                 <template #default="scope">
@@ -76,11 +76,11 @@ export default {
           },
         })
         .then((res) => {
-          console.log(res);
-          if (res.status == 200) {
-            for (let i = 0; i < res.data.data.length; i++) {
-              if (res.data.data[i].roomStatus == "可用") {
-                this.tableData.push(res.data.data[i]);
+          if (res.data.status == 200) {
+            this.tableData = []
+            for (let i = 0; i < res.data.data.data.length; i++) {
+              if (res.data.data.data[i].roomStatus == "可用") {
+                this.tableData.push(res.data.data.data[i]);
               }
             }
           }
@@ -115,16 +115,26 @@ export default {
       this.axios
         .post("/order", {
           userId: userStore.userInfo.id,
-          orderStatus: "待使用",
+          orderStatus: "待支付",
           checkInDate: this.value1[0],
           roomId: this.roomId,
           checkOutDate: this.value1[1],
         })
         .then((res) => {
-          ElMessage({
-            message: res.data.message,
-            type: "success",
-          });
+          console.log(res);
+
+          if (res.data.status == 200) {
+            ElMessage({
+              message: res.data.message,
+              type: "success",
+            });
+            this.fetchData();
+          } else {
+            ElMessage({
+              message: "预定失败",
+              type: "error",
+            });
+          }
         });
     },
   },
