@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="margin-top: 30px;margin-left: 30px;">
     <h1>请输入菜品信息</h1>
     <el-form>
       <el-form-item label="菜品名称">
